@@ -16,6 +16,7 @@ Hoje as atividades de perguntas e respostas são feitas em uma plataforma pouco 
 # Integrantes
 
 
+Taylanne Patricia Mendes
 
 # Tecnologias que serão utilizadas
 Frot-end: HTML5, CSS3 e Tailwind CSS
