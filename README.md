@@ -21,6 +21,8 @@ Jéssica C. Machado de Souza
 
 Taylanne Patricia Mendes
 
+Gabriel Carlos Silva
+
 # Tecnologias que serão utilizadas
 Frot-end: HTML5, CSS3 e Tailwind CSS
 
