@@ -16,6 +16,7 @@ Hoje as atividades de perguntas e respostas são feitas em uma plataforma pouco 
 # Integrantes
 
 Bárbara Rodrigues Mateus
+
 Taylanne Patricia Mendes
 
 # Tecnologias que serão utilizadas
