@@ -47,6 +47,55 @@ Organização: Github Projects utilizando Kanban
 # Kanban do Projeto
 https://github.com/users/taylanne/projects/2
 
+# Como rodar
+
+### 1. Clonar o repositório
+
+```bash
+git clone <url-do-repositorio>
+cd quix
+```
+
+### 2. Criar o ambiente virtual
+
+```bash
+python -m venv venv
+```
+
+### 3. Ativar o ambiente virtual
+
+Windows (PowerShell):
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+Linux/macOS:
+
+```bash
+source venv/bin/activate
+```
+
+### 4. Instalar as dependências
+
+```bash
+pip install django
+```
+
+### 5. Aplicar as migrações
+
+```bash
+python manage.py migrate
+```
+
+### 6. Rodar o servidor
+
+```bash
+python manage.py runserver
+```
+
+Acesse em http://127.0.0.1:8000/
+
 ## Fases da Trilha
 
 O conteúdo da Trilha é dividido em **fases**, definidas antes do início das turmas. Cada fase tem uma parte teórica e uma prática, e por isso tem **dois quizzes**:
