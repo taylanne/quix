@@ -1,0 +1,226 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>QuiX</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+
+    <!-- NAVBAR -->
+    <header class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}"
+               class="text-2xl font-bold text-green-700">
+                QuiX
+            </a>
+
+            <!-- Menu -->
+            <nav class="hidden md:flex items-center gap-8 text-sm">
+                <a href="{% url 'home' %}"
+                   class="text-green-700 font-medium">
+                    Início
+                </a>
+
+                <a href="#sobre"
+                   class="hover:text-green-700">
+                    Sobre
+                </a>
+
+                <a href="#funcionalidades"
+                   class="hover:text-green-700">
+                    Funcionalidades
+                </a>
+            </nav>
+
+            <!-- Login -->
+            <div class="flex items-center gap-3">
+
+                <a href="#"
+                   class="px-4 py-2 font-medium hover:text-green-700">
+                    Entrar
+                </a>
+
+                <a href="#"
+                   class="bg-green-700 text-white px-5 py-2 rounded-lg
+                          hover:bg-green-800 transition">
+                    Cadastrar
+                </a>
+
+            </div>
+        </div>
+    </header>
+
+
+    <!-- HERO -->
+    <main>
+
+        <section class="max-w-7xl mx-auto px-6 py-20">
+
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+
+                <!-- Texto -->
+                <div>
+
+                    <span class="text-green-700 font-semibold">
+                        Aprenda de uma forma diferente
+                    </span>
+
+                    <h1 class="text-5xl font-bold leading-tight mt-3">
+                        Aprenda se divertindo com
+                        <span class="text-green-700">
+                            quizzes!
+                        </span>
+                    </h1>
+
+                    <p class="text-gray-600 text-lg mt-6 max-w-xl">
+                        Teste seus conhecimentos sobre os conteúdos da Jornada,
+                        acompanhe seu progresso e aprenda de uma forma divertida.
+                    </p>
+
+                    <div class="flex gap-4 mt-8">
+
+                        <a href="#"
+                           class="bg-green-700 text-white px-6 py-3 rounded-lg
+                                  font-semibold hover:bg-green-800 transition">
+                            Começar agora
+                        </a>
+
+                        <a href="#sobre"
+                           class="px-6 py-3 text-green-700 font-semibold">
+                            Saiba mais →
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Ilustração temporária -->
+                <div class="flex justify-center">
+
+                    <div class="bg-green-100 rounded-full
+                                w-80 h-80
+                                flex items-center justify-center">
+
+                        <div class="text-center">
+
+                            <div class="text-7xl">
+                                📝
+                            </div>
+
+                            <p class="text-green-800 font-semibold mt-4">
+                                Aprenda • Responda • Evolua
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FUNCIONALIDADES -->
+        <section id="funcionalidades"
+                 class="max-w-7xl mx-auto px-6 pb-20">
+
+            <div class="grid md:grid-cols-3 gap-6">
+
+                <!-- Card 1 -->
+                <div class="bg-white border rounded-xl p-7 shadow-sm">
+
+                    <div class="text-4xl mb-4">
+                        🏆
+                    </div>
+
+                    <h2 class="text-xl font-bold">
+                        Quizzes da Jornada
+                    </h2>
+
+                    <p class="text-gray-600 mt-2">
+                        Teste seus conhecimentos através de quizzes
+                        organizados por módulo ou aula.
+                    </p>
+
+                </div>
+
+
+                <!-- Card 2 -->
+                <div class="bg-white border rounded-xl p-7 shadow-sm">
+
+                    <div class="text-4xl mb-4">
+                        📊
+                    </div>
+
+                    <h2 class="text-xl font-bold">
+                        Acompanhe seu progresso
+                    </h2>
+
+                    <p class="text-gray-600 mt-2">
+                        Visualize seus resultados e acompanhe sua
+                        evolução durante a Jornada.
+                    </p>
+
+                </div>
+
+
+                <!-- Card 3 -->
+                <div class="bg-white border rounded-xl p-7 shadow-sm">
+
+                    <div class="text-4xl mb-4">
+                        🥇
+                    </div>
+
+                    <h2 class="text-xl font-bold">
+                        Ganhe pontos
+                    </h2>
+
+                    <p class="text-gray-600 mt-2">
+                        Complete quizzes, acumule pontos e torne
+                        o aprendizado mais divertido.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SOBRE -->
+        <section id="sobre"
+                 class="bg-green-50 py-16">
+
+            <div class="max-w-4xl mx-auto px-6 text-center">
+
+                <h2 class="text-3xl font-bold">
+                    Sobre o QuiX
+                </h2>
+
+                <p class="text-gray-600 mt-5 text-lg">
+                    O QuiX é uma plataforma web gamificada desenvolvida
+                    para que as alunas da ONG Código X possam testar seus
+                    conhecimentos sobre os conteúdos lecionados durante
+                    a Jornada.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
