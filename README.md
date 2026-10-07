@@ -10,6 +10,8 @@ Taylanne Patricia Mendes
 
 Gabriel Carlos Silva
 
+Vinícius Nunes dos Anjos
+
 # Nome: QuiX
 Aplicativo web gamificado para que as alunas da ONG Código X testem seus conhecimentos sobre o conteúdo lecionado durante a Jornada.
 
