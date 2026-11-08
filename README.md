@@ -96,6 +96,44 @@ python manage.py runserver
 
 Acesse em http://127.0.0.1:8000/
 
+### 7. Ativar a verificação de commits
+
+Rode uma vez, depois de clonar:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+A partir daí, o Git recusa commits fora do padrão [Conventional Commits](https://www.conventionalcommits.org/pt-br/v1.0.0/). Os títulos de Pull Request também são verificados no GitHub.
+
+## Padrão de commits
+
+As mensagens de commit e os títulos de PR seguem o formato:
+
+```
+tipo(escopo opcional): descrição
+```
+
+A descrição começa com letra minúscula e não termina com ponto final.
+
+| Tipo | Quando usar | Exemplo |
+| --- | --- | --- |
+| `feat` | Funcionalidade nova | `feat(quiz): adiciona barra de progresso` |
+| `fix` | Correção de bug | `fix(auth): bloqueia e-mail fora da ONG` |
+| `docs` | Documentação | `docs: atualiza o README` |
+| `style` | Formatação do código, sem mudar comportamento | `style: ajusta indentação` |
+| `refactor` | Reorganização do código | `refactor(fases): separa funções` |
+| `perf` | Desempenho | `perf: reduz consultas no banco` |
+| `test` | Testes | `test(quiz): testa nota oficial` |
+| `build` | Dependências | `build: adiciona django-allauth` |
+| `ci` | GitHub Actions e hooks | `ci: valida commits nos PRs` |
+| `chore` | Manutenção geral | `chore: atualiza .gitignore` |
+| `revert` | Desfaz um commit | `revert: desfaz login com Google` |
+
+Escopos sugeridos: `auth`, `turmas`, `alunas`, `fases`, `quiz`, `resultados`, `admin`, `core`, `templates`.
+
+Nomes de branch seguem o mesmo tipo: `feat/login-google`, `fix/nota-quiz`.
+
 ## Fases da Trilha
 
 O conteúdo da Trilha é dividido em **fases**, definidas antes do início das turmas. Cada fase tem uma parte teórica e uma prática, e por isso tem **dois quizzes**:

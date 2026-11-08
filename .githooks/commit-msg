@@ -1,0 +1,4 @@
+#!/bin/sh
+# Confere a mensagem de commit com o padrão Conventional Commits
+PY=$(command -v python3 || command -v python)
+exec "$PY" scripts/check_commit_msg.py "$1"
