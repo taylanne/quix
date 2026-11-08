@@ -79,7 +79,7 @@ source venv/bin/activate
 ### 4. Instalar as dependências
 
 ```bash
-pip install django
+pip install requirements.txt
 ```
 
 ### 5. Aplicar as migrações
