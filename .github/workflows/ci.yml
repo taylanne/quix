@@ -1,0 +1,42 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Conventional Commits
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 #vai baixar todos os commits, nao apenas o ultimo 
+        
+    - name: Instalar Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+        
+    - name: Validar título do PR e commits
+      env:
+        TITULO: ${{ github.event.pull_request.title }}
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+      run: |
+        falhou=0
+        echo "$TITULO" > msg && python scripts/check_commit_msg.py msg || falhou=1
+        for sha in $(git rev-list --no-merges "$BASE..$HEAD"); do
+          git log -1 --format=%B "$sha" > msg
+          python scripts/check_commit_msg.py msg || falhou=1
+        done
+        exit $falhou
+  
+  
