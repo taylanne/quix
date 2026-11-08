@@ -79,7 +79,7 @@ source venv/bin/activate
 ### 4. Instalar as dependências
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 5. Aplicar as migrações
