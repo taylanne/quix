@@ -2,6 +2,22 @@ from django.conf import settings
 from django.db import models
 
 
+class PerfilUsuario(models.Model):
+    class Tipo(models.TextChoices):
+        ALUNA = "aluna", "Aluna"
+        MENTORA = "mentora", "Mentora"
+
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="perfil",
+    )
+    tipo = models.CharField(max_length=10, choices=Tipo.choices, default=Tipo.ALUNA)
+
+    def __str__(self):
+        return f"{self.usuario} ({self.get_tipo_display()})"
+
+
 class Fase(models.Model):
     numero = models.PositiveIntegerField(unique=True)
     nome = models.CharField(max_length=100)

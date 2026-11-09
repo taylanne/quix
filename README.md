@@ -82,43 +82,32 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Configurar o PostgreSQL
+### 5. Aplicar as migrações e criar a conta local
 
-Crie um banco e um usuário no PostgreSQL e configure estas variáveis de ambiente:
-
-| Variável | Padrão | Descrição |
-| --- | --- | --- |
-| `DB_NAME` | `quix` | Nome do banco |
-| `DB_USER` | `postgres` | Usuário do banco |
-| `DB_PASSWORD` | vazio | Senha do usuário |
-| `DB_HOST` | `localhost` | Host do servidor PostgreSQL |
-| `DB_PORT` | `5432` | Porta do servidor PostgreSQL |
-
-No PowerShell, por exemplo:
-
-```powershell
-$env:DB_NAME = "quix"
-$env:DB_USER = "postgres"
-$env:DB_PASSWORD = "sua-senha"
-```
-
-### 6. Aplicar as migrações
+O desenvolvimento local usa SQLite por padrão, sem precisar instalar ou configurar PostgreSQL:
 
 ```bash
 python manage.py migrate
 ```
 
-Se a instalação SQLite anterior já contém dados, exporte-os **antes de atualizar para esta configuração**, ainda usando a versão que aponta para SQLite: `python manage.py dumpdata --natural-foreign --natural-primary --exclude contenttypes --exclude auth.permission -o dados.json`. Após atualizar, configurar o PostgreSQL e aplicar as migrações, importe-os com `python manage.py loaddata dados.json`.
+No modo de desenvolvimento, a migração cria automaticamente a conta local, caso ela ainda não exista:
 
-### 7. Rodar o servidor
+- E-mail: `jessica@teste.com.br`
+- Senha: `teste123@`
+
+### 6. Rodar o servidor
 
 ```bash
 python manage.py runserver
 ```
 
-Acesse em http://127.0.0.1:8000/
+Acesse http://127.0.0.1:8000/login e entre com a conta acima. O banco SQLite fica no arquivo `db.sqlite3` na pasta do projeto.
 
-### 8. Ativar a verificação de commits
+Essa conta e essa senha são apenas para desenvolvimento local. Em implantação, defina `$env:DJANGO_DEBUG = "False"`, configure credenciais seguras e uma lista `QUIX_DEVELOPER_EMAILS`; o banco padrão passa a ser PostgreSQL. Para usar PostgreSQL localmente, defina `$env:DB_ENGINE = "postgresql"` e configure `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` e `DB_PORT` antes de executar as migrações.
+
+O login Google também pode ser habilitado configurando `GOOGLE_OAUTH_CLIENT_ID` e `QUIX_DEVELOPER_EMAILS`.
+
+### 7. Ativar a verificação de commits
 
 Rode uma vez, depois de clonar:
 
@@ -277,23 +266,26 @@ flowchart LR
 
 ## Rotas
 
-As rotas da mentora ficam sob `/admin`, o que permite proteger toda a área administrativa com uma única verificação de perfil.
+As rotas administrativas ficam sob `/admin` e exigem uma conta de desenvolvedor com perfil de mentora. A área de alunas tem cadastro, busca, edição e remoção de acesso.
 
 ### Frontend
 
 | Rota | Página | Acesso |
 | --- | --- | --- |
-| `/login` | Login | Público |
-| `/` | Início | Aluna |
+| `/login` | Login com Google | Desenvolvedor autorizado |
+| `/` | Início ou redirecionamento para a área do perfil | Público / Desenvolvedor |
+| `/aluna` | Área da aluna | Aluna cadastrada |
 | `/fases/:id` | Fase | Aluna |
 | `/quiz/:id` | Responder quiz | Aluna |
 | `/quiz/:id/resultado` | Resultado | Aluna |
 | `/historico` | Histórico | Aluna |
 | `/perfil` | Perfil | Aluna / Mentora |
 | `/admin` | Painel | Mentora |
+| `/admin/alunas` | Cadastro, busca e gerenciamento de alunas | Mentora |
+| `/admin/alunas/:id/editar` | Editar aluna | Mentora |
+| `/admin/alunas/:id/remover` | Remover acesso da aluna | Mentora |
 | `/admin/turmas` | Turmas | Mentora |
 | `/admin/turmas/:id` | Detalhe da turma | Mentora |
-| `/admin/alunas` | Alunas | Mentora |
 | `/admin/fases` | Fases | Mentora |
 | `/admin/fases/nova` | Cadastro de fase | Mentora |
 | `/admin/fases/:id` | Detalhe da fase | Mentora |
@@ -304,7 +296,7 @@ As rotas da mentora ficam sob `/admin`, o que permite proteger toda a área admi
 
 | Método | Rota | Descrição |
 | --- | --- | --- |
-| POST | `/api/auth/google` | Entrar com Google: valida o token, confere o domínio da ONG e se a usuária está cadastrada |
+| POST | `/api/auth/google` | Entrar com Google: valida o token, a allowlist de desenvolvedores e a conta cadastrada |
 | POST | `/api/auth/logout` | Encerrar sessão |
 | GET | `/api/me` | Dados da usuária logada |
 | GET | `/api/turmas` | Listar turmas |

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar aluna | QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="mx-auto max-w-xl p-6">
+        <a href="{% url 'admin_alunas' %}" class="text-sm font-medium text-green-700">← Voltar para alunas</a>
+        <section class="mt-6 rounded-xl border bg-white p-8 shadow-sm">
+            <h1 class="text-2xl font-bold">Editar aluna</h1>
+            <form method="post" class="mt-6 grid gap-4">
+                {% csrf_token %}
+                {% for field in form %}
+                    <label class="block text-sm font-medium">
+                        {{ field.label }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="mt-1 block text-sm text-red-700">{{ error }}</span>
+                        {% endfor %}
+                    </label>
+                {% endfor %}
+                <button type="submit" class="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800">
+                    Salvar alterações
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
