@@ -43,18 +43,26 @@
 
             <!-- Login -->
             <div class="flex items-center gap-3">
-
-                <a href="#"
-                   class="px-4 py-2 font-medium hover:text-green-700">
-                    Entrar
-                </a>
-
-                <a href="#"
-                   class="bg-green-700 text-white px-5 py-2 rounded-lg
-                          hover:bg-green-800 transition">
-                    Cadastrar
-                </a>
-
+                {% if user.is_authenticated %}
+                    <a href="{% url 'perfil' %}" class="px-4 py-2 font-medium hover:text-green-700">
+                        Meu perfil
+                    </a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition"
+                                type="submit">
+                            Sair
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="px-4 py-2 font-medium hover:text-green-700">
+                        Entrar
+                    </a>
+                    <a href="{% url 'login' %}"
+                       class="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800 transition">
+                        Acesso da equipe
+                    </a>
+                {% endif %}
             </div>
         </div>
     </header>
@@ -88,7 +96,7 @@
 
                     <div class="flex gap-4 mt-8">
 
-                        <a href="#"
+                        <a href="{% url 'login' %}"
                            class="bg-green-700 text-white px-6 py-3 rounded-lg
                                   font-semibold hover:bg-green-800 transition">
                             Começar agora

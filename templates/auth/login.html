@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center p-6">
+    <main class="w-full max-w-md rounded-xl border bg-white p-8 shadow-sm">
+        <a href="{% url 'home' %}" class="text-2xl font-bold text-green-700">QuiX</a>
+        <h1 class="mt-6 text-2xl font-bold">Entrar na plataforma</h1>
+        <p class="mt-2 text-gray-600">Entre com sua conta autorizada.</p>
+
+        <p id="login-error" class="mt-5 hidden rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert"></p>
+
+        {% if local_password_login_enabled %}
+            <form method="post" class="mt-6 grid gap-4">
+                {% csrf_token %}
+                {% for error in form.non_field_errors %}
+                    <p class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ error }}</p>
+                {% endfor %}
+                {% for field in form %}
+                    <label class="grid gap-1 text-sm font-medium">
+                        {{ field.label }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="text-red-700">{{ error }}</span>
+                        {% endfor %}
+                    </label>
+                {% endfor %}
+                <button type="submit"
+                        class="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800">
+                    Entrar
+                </button>
+            </form>
+        {% endif %}
+
+        {% if login_enabled %}
+            <div class="mt-6 flex justify-center">
+                <div id="g_id_onload"
+                     data-client_id="{{ google_client_id }}"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false"></div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left"></div>
+            </div>
+            <script src="https://accounts.google.com/gsi/client" async defer></script>
+        {% elif not local_password_login_enabled %}
+            <p class="mt-6 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
+                O acesso está desativado até que o login local ou o login Google sejam configurados.
+            </p>
+        {% endif %}
+    </main>
+    <script>
+        function getCookie(name) {
+            const cookie = document.cookie
+                .split("; ")
+                .find((item) => item.startsWith(`${name}=`));
+            return cookie ? decodeURIComponent(cookie.split("=")[1]) : "";
+        }
+
+        function handleCredentialResponse(response) {
+            fetch("{% url 'google_login' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: JSON.stringify({ credential: response.credential }),
+            })
+                .then(async (result) => {
+                    const data = await result.json();
+                    if (!result.ok) {
+                        throw new Error(data.error);
+                    }
+                    window.location.assign(data.redirect_url);
+                })
+                .catch((error) => {
+                    const messages = {
+                        developer_access_required: "Esta conta Google não está autorizada.",
+                        account_not_registered: "Esta conta não está cadastrada no QuiX.",
+                        invalid_google_credential: "Não foi possível validar sua conta Google.",
+                        google_verification_unavailable: "O login Google está temporariamente indisponível.",
+                    };
+                    const message = messages[error.message]
+                        || "Não foi possível entrar. Tente novamente.";
+                    const element = document.getElementById("login-error");
+                    element.textContent = message;
+                    element.classList.remove("hidden");
+                });
+        }
+    </script>
+</body>
+</html>

@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-me#=prm*9mfg5vjx_@d+r1i24lg2=p$ql^fi3y51)dwyglov+w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').casefold() in {'1', 'true', 'yes'}
 
 ALLOWED_HOSTS = []
 
@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.DeveloperAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -74,16 +75,28 @@ WSGI_APPLICATION = 'quix.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'quix'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+DB_ENGINE = os.environ.get('DB_ENGINE', 'sqlite' if DEBUG else 'postgresql')
+
+if DB_ENGINE == 'sqlite':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.environ.get('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        }
     }
-}
+elif DB_ENGINE == 'postgresql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'quix'),
+            'USER': os.environ.get('DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+else:
+    raise ValueError('DB_ENGINE deve ser "sqlite" ou "postgresql".')
 
 
 # Password validation
@@ -131,3 +144,17 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
+QUIX_LOCAL_DEMO_EMAIL = os.environ.get('QUIX_LOCAL_DEMO_EMAIL', 'jessica@teste.com.br')
+QUIX_LOCAL_DEMO_PASSWORD = os.environ.get('QUIX_LOCAL_DEMO_PASSWORD', 'teste123@')
+QUIX_LOCAL_PASSWORD_LOGIN = DEBUG and DB_ENGINE == 'sqlite'
+QUIX_DEVELOPER_EMAILS = tuple(
+    email.strip().casefold()
+    for email in os.environ.get('QUIX_DEVELOPER_EMAILS', '').split(',')
+    if email.strip()
+)
+if QUIX_LOCAL_PASSWORD_LOGIN:
+    QUIX_DEVELOPER_EMAILS = tuple(
+        dict.fromkeys((*QUIX_DEVELOPER_EMAILS, QUIX_LOCAL_DEMO_EMAIL.casefold()))
+    )

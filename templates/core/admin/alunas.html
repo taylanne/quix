@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alunas | QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="mx-auto max-w-5xl p-6">
+        <nav class="flex items-center justify-between">
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-green-700">QuiX</a>
+            <div class="flex items-center gap-5">
+                <a href="{% url 'perfil' %}" class="text-sm font-medium text-green-700">Meu perfil</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="text-sm font-medium text-green-700" type="submit">Sair</button>
+                </form>
+            </div>
+        </nav>
+
+        <header class="mt-10">
+            <p class="font-semibold text-green-700">Área administrativa</p>
+            <h1 class="mt-2 text-3xl font-bold">Alunas</h1>
+        </header>
+
+        {% for message in messages %}
+            <p class="mt-4 rounded-lg bg-green-50 p-3 text-sm text-green-800">{{ message }}</p>
+        {% endfor %}
+
+        <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Cadastrar aluna</h2>
+            <form method="post" class="mt-4 grid gap-4 md:grid-cols-3 md:items-end">
+                {% csrf_token %}
+                {% for field in form %}
+                    <label class="block text-sm font-medium">
+                        {{ field.label }}
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <span class="mt-1 block text-sm text-red-700">{{ error }}</span>
+                        {% endfor %}
+                    </label>
+                {% endfor %}
+                <button type="submit" class="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800">
+                    Cadastrar
+                </button>
+            </form>
+        </section>
+
+        <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <h2 class="text-xl font-bold">Alunas cadastradas</h2>
+                <form method="get" class="flex gap-2">
+                    <label for="q" class="sr-only">Buscar aluna</label>
+                    <input id="q" name="q" value="{{ consulta }}" placeholder="Nome ou e-mail"
+                           class="rounded-lg border px-3 py-2">
+                    <button class="rounded-lg border px-4 py-2 font-medium" type="submit">Buscar</button>
+                </form>
+            </div>
+            <div class="mt-5 overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b text-gray-500">
+                            <th class="py-3 pr-4">Nome</th>
+                            <th class="py-3 pr-4">E-mail</th>
+                            <th class="py-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for aluna in alunas %}
+                            <tr class="border-b last:border-0">
+                                <td class="py-3 pr-4">{{ aluna.get_full_name|default:"-" }}</td>
+                                <td class="py-3 pr-4">{{ aluna.email }}</td>
+                                <td class="py-3">
+                                    <div class="flex items-center gap-4">
+                                        <a class="font-medium text-green-700"
+                                           href="{% url 'editar_aluna' aluna.pk %}">Editar</a>
+                                        <form method="post" action="{% url 'remover_aluna' aluna.pk %}"
+                                              onsubmit="return confirm('Remover o acesso desta aluna?')">
+                                            {% csrf_token %}
+                                            <button class="font-medium text-red-700" type="submit">Remover</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td class="py-5 text-gray-500" colspan="3">Nenhuma aluna encontrada.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <a class="mt-6 inline-block text-sm font-medium text-green-700"
+           href="{% url 'admin:index' %}">Gerenciar conteúdo do QuiX</a>
+    </main>
+</body>
+</html>
