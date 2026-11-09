@@ -1,0 +1,72 @@
+{% extends "core/admin/base.html" %}
+
+{% block title %}Turmas{% endblock %}
+
+{% block header %}
+    <header class="mt-10">
+        <p class="font-semibold text-green-700">Área administrativa</p>
+        <h1 class="mt-2 text-3xl font-bold">Turmas</h1>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-bold">Criar turma</h2>
+        <form method="post" class="mt-4 grid gap-4 md:grid-cols-3 md:items-end">
+            {% csrf_token %}
+            <label class="block text-sm font-medium md:col-span-2">
+                {{ form.nome.label }}
+                {{ form.nome }}
+                {% for error in form.nome.errors %}
+                    <span class="mt-1 block text-sm text-red-700">{{ error }}</span>
+                {% endfor %}
+            </label>
+            <button type="submit" class="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800">
+                Criar turma
+            </button>
+        </form>
+    </section>
+
+    <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-bold">Turmas cadastradas</h2>
+        <div class="mt-5 overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b text-gray-500">
+                        <th class="py-3 pr-4">Turma</th>
+                        <th class="py-3 pr-4">Alunas</th>
+                        <th class="py-3 pr-4">Quizzes liberados</th>
+                        <th class="py-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in turmas %}
+                        <tr class="border-b last:border-0">
+                            <td class="py-3 pr-4">
+                                <a class="font-medium text-green-700"
+                                   href="{% url 'admin_turma_detalhe' turma.pk %}">{{ turma.nome }}</a>
+                            </td>
+                            <td class="py-3 pr-4">{{ turma.total_alunas }}</td>
+                            <td class="py-3 pr-4">{{ turma.total_liberacoes }}</td>
+                            <td class="py-3">
+                                <div class="flex items-center gap-4">
+                                    <a class="font-medium text-green-700"
+                                       href="{% url 'editar_turma' turma.pk %}">Editar</a>
+                                    <form method="post" action="{% url 'remover_turma' turma.pk %}"
+                                          onsubmit="return confirm('Remover esta turma? As alunas ficarão sem turma e o cronograma de liberação será apagado.')">
+                                        {% csrf_token %}
+                                        <button class="font-medium text-red-700" type="submit">Remover</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="py-5 text-gray-500" colspan="4">Nenhuma turma criada ainda.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}

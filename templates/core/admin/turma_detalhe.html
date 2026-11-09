@@ -1,0 +1,148 @@
+{% extends "core/admin/base.html" %}
+
+{% block title %}{{ turma.nome }}{% endblock %}
+
+{% block header %}
+    <header class="mt-10">
+        <a href="{% url 'admin_turmas' %}" class="text-sm font-medium text-green-700">← Voltar para turmas</a>
+        <div class="mt-3 flex flex-wrap items-center justify-between gap-4">
+            <h1 class="text-3xl font-bold">{{ turma.nome }}</h1>
+            <a class="rounded-lg border px-4 py-2 text-sm font-medium"
+               href="{% url 'editar_turma' turma.pk %}">Editar turma</a>
+        </div>
+    </header>
+{% endblock %}
+
+{% block content %}
+    <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-bold">Alunas da turma <span class="text-gray-500">({{ alunas|length }})</span></h2>
+
+        <div class="mt-5 overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="border-b text-gray-500">
+                        <th class="py-3 pr-4">Nome</th>
+                        <th class="py-3 pr-4">E-mail</th>
+                        <th class="py-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for aluna in alunas %}
+                        <tr class="border-b last:border-0">
+                            <td class="py-3 pr-4">{{ aluna.get_full_name|default:"-" }}</td>
+                            <td class="py-3 pr-4">{{ aluna.email }}</td>
+                            <td class="py-3">
+                                <form method="post" action="{% url 'turma_remover_aluna' turma.pk aluna.pk %}"
+                                      onsubmit="return confirm('Tirar esta aluna da turma?')">
+                                    {% csrf_token %}
+                                    <button class="font-medium text-red-700" type="submit">Tirar da turma</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="py-5 text-gray-500" colspan="3">Nenhuma aluna nesta turma ainda.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6 border-t pt-6">
+            <h3 class="font-semibold">Adicionar alunas</h3>
+            {% if candidatas %}
+                <form method="post" action="{% url 'turma_adicionar_alunas' turma.pk %}" class="mt-3">
+                    {% csrf_token %}
+                    <ul class="grid max-h-64 gap-2 overflow-y-auto rounded-lg border p-3 md:grid-cols-2">
+                        {% for aluna in candidatas %}
+                            <li>
+                                <label class="flex items-start gap-2 text-sm">
+                                    <input type="checkbox" name="alunas" value="{{ aluna.pk }}" class="mt-1">
+                                    <span>
+                                        {{ aluna.get_full_name|default:aluna.email }}
+                                        <span class="block text-gray-500">{{ aluna.email }}</span>
+                                        {% if aluna.perfil.turma %}
+                                            <span class="block text-amber-700">Hoje na turma {{ aluna.perfil.turma.nome }}; será movida para esta.</span>
+                                        {% endif %}
+                                    </span>
+                                </label>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <button type="submit" class="mt-3 rounded-lg bg-green-700 px-5 py-2 font-semibold text-white hover:bg-green-800">
+                        Adicionar selecionadas
+                    </button>
+                </form>
+            {% else %}
+                <p class="mt-3 text-sm text-gray-500">
+                    Todas as alunas cadastradas já estão nesta turma.
+                    <a class="font-medium text-green-700" href="{% url 'admin_alunas' %}">Cadastrar nova aluna</a>
+                </p>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+        <h2 class="text-xl font-bold">Cronograma de liberação</h2>
+        <p class="mt-1 text-sm text-gray-600">
+            Cada quiz tem a sua data. Antes dela, o quiz não aparece para as alunas da turma.
+        </p>
+
+        <div class="mt-5 grid gap-4">
+            {% for item in cronograma %}
+                <article class="rounded-lg border p-4">
+                    <h3 class="font-semibold">Fase {{ item.fase.numero }}: {{ item.fase.nome }}</h3>
+                    {% for q in item.quizzes %}
+                        <div class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
+                            <div>
+                                <p class="font-medium">Quiz {{ q.quiz.get_tipo_display|lower }}</p>
+                                {% if not q.liberacao %}
+                                    <span class="text-sm text-gray-500">Não liberado</span>
+                                {% elif q.liberada %}
+                                    <span class="text-sm text-green-700">Liberado desde {{ q.liberacao.data|date:"d/m/Y" }}</span>
+                                {% else %}
+                                    <span class="text-sm text-amber-700">Agendado para {{ q.liberacao.data|date:"d/m/Y" }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-3">
+                                {% if q.liberacao %}
+                                    <form method="post" class="flex items-center gap-2"
+                                          action="{% url 'turma_alterar_liberacao' turma.pk q.quiz.pk %}">
+                                        {% csrf_token %}
+                                        <input type="date" name="data" required
+                                               value="{{ q.liberacao.data|date:'Y-m-d' }}"
+                                               aria-label="Nova data de liberação"
+                                               class="rounded-lg border px-3 py-2 text-sm">
+                                        <button type="submit" class="rounded-lg border px-4 py-2 text-sm font-medium">Alterar data</button>
+                                    </form>
+                                    <form method="post"
+                                          action="{% url 'turma_retirar_liberacao' turma.pk q.quiz.pk %}"
+                                          onsubmit="return confirm('Retirar este quiz da turma?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-sm font-medium text-red-700">Retirar</button>
+                                    </form>
+                                {% else %}
+                                    <form method="post" class="flex items-center gap-2"
+                                          action="{% url 'turma_liberar_quiz' turma.pk %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quiz" value="{{ q.quiz.pk }}">
+                                        <input type="date" name="data" required
+                                               value="{{ hoje|date:'Y-m-d' }}"
+                                               aria-label="Data de liberação"
+                                               class="rounded-lg border px-3 py-2 text-sm">
+                                        <button type="submit" class="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white hover:bg-green-800">Liberar</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </article>
+            {% empty %}
+                <p class="text-sm text-gray-500">
+                    Nenhuma fase cadastrada ainda. Cadastre as fases para poder liberar os quizzes.
+                </p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
