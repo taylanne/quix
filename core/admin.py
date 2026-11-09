@@ -3,7 +3,17 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
 from .admin_site import site
-from .models import Alternativa, Fase, PerfilUsuario, Pergunta, Quiz, Resposta, Tentativa
+from .models import (
+    Alternativa,
+    Fase,
+    Liberacao,
+    PerfilUsuario,
+    Pergunta,
+    Quiz,
+    Resposta,
+    Tentativa,
+    Turma,
+)
 
 User = get_user_model()
 
@@ -80,3 +90,15 @@ class TentativaAdmin(admin.ModelAdmin):
     list_display = ["aluna", "quiz", "acertos", "total", "oficial", "criada_em"]  # colunas da lista
     list_filter = ["oficial", "quiz"]  # filtra por oficial/treino e por quiz
     inlines = [RespostaInline]  # mostra o q a aluna marcou em cada pergunta
+
+
+class LiberacaoInline(admin.TabularInline):  # cronograma de liberação dentro da pág da turma
+    model = Liberacao
+    extra = 0
+
+
+@admin.register(Turma, site=site)
+class TurmaAdmin(admin.ModelAdmin):
+    list_display = ["nome", "criada_em"]
+    search_fields = ["nome"]
+    inlines = [LiberacaoInline]
