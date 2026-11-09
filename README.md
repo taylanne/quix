@@ -38,7 +38,7 @@ Frot-end: HTML5, CSS3 e Tailwind CSS
 
 Back-end: Python com Django
 
-Banco de Dados: SQLite
+Banco de Dados: PostgreSQL
 
 Versionamento: Git e GitHub
 
@@ -82,13 +82,35 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Aplicar as migrações
+### 5. Configurar o PostgreSQL
+
+Crie um banco e um usuário no PostgreSQL e configure estas variáveis de ambiente:
+
+| Variável | Padrão | Descrição |
+| --- | --- | --- |
+| `DB_NAME` | `quix` | Nome do banco |
+| `DB_USER` | `postgres` | Usuário do banco |
+| `DB_PASSWORD` | vazio | Senha do usuário |
+| `DB_HOST` | `localhost` | Host do servidor PostgreSQL |
+| `DB_PORT` | `5432` | Porta do servidor PostgreSQL |
+
+No PowerShell, por exemplo:
+
+```powershell
+$env:DB_NAME = "quix"
+$env:DB_USER = "postgres"
+$env:DB_PASSWORD = "sua-senha"
+```
+
+### 6. Aplicar as migrações
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Rodar o servidor
+Se a instalação SQLite anterior já contém dados, exporte-os **antes de atualizar para esta configuração**, ainda usando a versão que aponta para SQLite: `python manage.py dumpdata --natural-foreign --natural-primary --exclude contenttypes --exclude auth.permission -o dados.json`. Após atualizar, configurar o PostgreSQL e aplicar as migrações, importe-os com `python manage.py loaddata dados.json`.
+
+### 7. Rodar o servidor
 
 ```bash
 python manage.py runserver
@@ -96,7 +118,7 @@ python manage.py runserver
 
 Acesse em http://127.0.0.1:8000/
 
-### 7. Ativar a verificação de commits
+### 8. Ativar a verificação de commits
 
 Rode uma vez, depois de clonar:
 
