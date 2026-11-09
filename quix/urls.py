@@ -1,6 +1,6 @@
 from django.urls import path
 
-from core import views, views_turmas
+from core import api_turmas, views, views_turmas
 from core.admin_site import site
 
 urlpatterns = [
@@ -9,6 +9,12 @@ urlpatterns = [
     path("api/auth/google", views.google_login, name="google_login"),
     path("api/auth/logout", views.logout_view, name="logout"),
     path("api/me", views.api_me, name="api_me"),
+    path("api/turmas", api_turmas.turmas, name="api_turmas"),
+    path("api/turmas/<int:turma_id>", api_turmas.turma_detalhe, name="api_turma"),
+    path("api/turmas/<int:turma_id>/alunas", api_turmas.turma_alunas, name="api_turma_alunas"),
+    path("api/turmas/<int:turma_id>/alunas/<int:aluna_id>", api_turmas.turma_aluna, name="api_turma_aluna"),
+    path("api/turmas/<int:turma_id>/liberacoes", api_turmas.turma_liberacoes, name="api_turma_liberacoes"),
+    path("api/turmas/<int:turma_id>/liberacoes/<int:quiz_id>", api_turmas.turma_liberacao, name="api_turma_liberacao"),
     path("perfil", views.profile, name="perfil"),
     path("aluna", views.aluna_dashboard, name="aluna_dashboard"),
     path("admin", views.admin_alunas, name="admin_home"),
