@@ -15,5 +15,9 @@ urlpatterns = [
     path("admin/alunas", views.admin_alunas, name="admin_alunas"),
     path("admin/alunas/<int:user_id>/editar", views.editar_aluna, name="editar_aluna"),
     path("admin/alunas/<int:user_id>/remover", views.remover_aluna, name="remover_aluna"),
+    path("aluna", views.aluna_dashboard, name="aluna_dashboard"),
+    path("historico", views.aluna_historico, name="historico"),
+    path("admin/resultados", views.admin_resultados, name="admin_resultados"),
+    path("api/resultados", views.api_resultados, name="api_resultados"),
     path("", views.home, name="home"),
 ]

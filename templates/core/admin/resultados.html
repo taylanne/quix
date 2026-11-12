@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados | QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="mx-auto max-w-5xl p-6">
+        <nav class="flex items-center justify-between">
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-green-700">QuiX</a>
+            <div class="flex items-center gap-5">
+                <a href="{% url 'admin_alunas' %}" class="text-sm font-medium text-gray-700 hover:text-green-700">Alunas</a>
+                <a href="{% url 'admin_resultados' %}" class="text-sm font-semibold text-green-700">Resultados</a>
+                <a href="{% url 'perfil' %}" class="text-sm font-medium text-gray-700 hover:text-green-700">Meu perfil</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="text-sm font-medium text-green-700" type="submit">Sair</button>
+                </form>
+            </div>
+        </nav>
+
+        <header class="mt-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+                <p class="font-semibold text-green-700">Área administrativa</p>
+                <h1 class="mt-2 text-3xl font-bold">Resultados Oficiais</h1>
+                <p class="mt-1 text-sm text-gray-600">Notas referentes à primeira tentativa de cada aluna.</p>
+            </div>
+            <div class="rounded-xl border bg-white px-5 py-3 shadow-sm">
+                <p class="text-xs font-medium uppercase text-gray-500">Média do filtro atual</p>
+                <p class="text-2xl font-bold text-green-700">{{ media_geral }}%</p>
+            </div>
+        </header>
+
+        <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-bold">Filtrar resultados</h2>
+            <form method="get" class="mt-4 grid gap-4 md:grid-cols-4 md:items-end">
+                <label class="block text-sm font-medium">
+                    Fase
+                    <select name="fase" class="mt-1 w-full rounded-lg border px-3 py-2">
+                        <option value="">Todas as fases</option>
+                        {% for f in fases %}
+                            <option value="{{ f.id }}" {% if filtros.fase == f.id|stringformat:"s" %}selected{% endif %}>
+                                Fase {{ f.numero }} - {{ f.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="block text-sm font-medium">
+                    Quiz
+                    <select name="quiz" class="mt-1 w-full rounded-lg border px-3 py-2">
+                        <option value="">Todos os quizzes</option>
+                        {% for q in quizzes %}
+                            <option value="{{ q.id }}" {% if filtros.quiz == q.id|stringformat:"s" %}selected{% endif %}>
+                                Fase {{ q.fase.numero }} ({{ q.get_tipo_display }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="block text-sm font-medium">
+                    Aluna
+                    <select name="aluna" class="mt-1 w-full rounded-lg border px-3 py-2">
+                        <option value="">Todas as alunas</option>
+                        {% for a in alunas %}
+                            <option value="{{ a.id }}" {% if filtros.aluna == a.id|stringformat:"s" %}selected{% endif %}>
+                                {{ a.get_full_name|default:a.email }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="w-full rounded-lg bg-green-700 px-4 py-2.5 font-semibold text-white hover:bg-green-800">
+                        Filtrar
+                    </button>
+                    <a href="{% url 'admin_resultados' %}" class="rounded-lg border px-4 py-2.5 text-center font-medium text-gray-700 hover:bg-gray-50">
+                        Limpar
+                    </a>
+                </div>
+            </form>
+        </section>
+
+        <section class="mt-8 rounded-xl border bg-white p-6 shadow-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b text-gray-500">
+                            <th class="py-3 pr-4">Aluna</th>
+                            <th class="py-3 pr-4">Fase</th>
+                            <th class="py-3 pr-4">Quiz</th>
+                            <th class="py-3 pr-4">Nota Oficial</th>
+                            <th class="py-3 pr-4">Tentativas</th>
+                            <th class="py-3">Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in resultados %}
+                            <tr class="border-b last:border-0 hover:bg-gray-50">
+                                <td class="py-3 pr-4 font-medium">{{ item.aluna_nome }}</td>
+                                <td class="py-3 pr-4">Fase {{ item.fase_numero }} - {{ item.fase_nome }}</td>
+                                <td class="py-3 pr-4">
+                                    <span class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                        {{ item.quiz_tipo_label }}
+                                    </span>
+                                </td>
+                                <td class="py-3 pr-4 font-semibold">
+                                    {{ item.acertos }}/{{ item.total }} ({{ item.nota_percentual }}%)
+                                </td>
+                                <td class="py-3 pr-4 text-gray-600">{{ item.tentativas_total }}x</td>
+                                <td class="py-3 text-gray-500">{{ item.criada_em|date:"d/m/Y H:i" }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td class="py-6 text-center text-gray-500" colspan="6">
+                                    Nenhum resultado oficial encontrado para os filtros selecionados.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

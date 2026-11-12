@@ -16,7 +16,12 @@ from .access import get_or_create_profile, is_developer, is_mentor
 from .authentication import verify_google_credential
 from .decorators import developer_required, mentor_required
 from .forms import AlunaForm, LocalLoginForm
-from .models import PerfilUsuario
+from .models import Fase, PerfilUsuario, Quiz
+from .resultados import (
+    consultar_resultados_mentora,
+    historico_aluna,
+    resumo_desempenho_aluna,
+)
 
 User = get_user_model()
 
@@ -155,7 +160,20 @@ def profile(request):
 def aluna_dashboard(request):
     if is_mentor(request.user):
         return redirect("admin_alunas")
-    return render(request, "core/aluna.html")
+    resumo = resumo_desempenho_aluna(request.user)
+    return render(request, "core/aluna.html", {"resumo": resumo})
+
+@developer_required
+def aluna_historico(request):
+    if is_mentor(request.user):
+        return redirect("admin_alunas")
+    resumo = resumo_desempenho_aluna(request.user)
+    historico = historico_aluna(request.user)
+    return render(
+        request,
+        "core/historico.html",
+        {"resumo": resumo, "historico": historico},
+    )
 
 
 def _alunas_ativas():
@@ -247,3 +265,55 @@ def remover_aluna(request, user_id):
     aluna.save(update_fields=["is_active"])
     messages.success(request, "Acesso da aluna removido.")
     return redirect("admin_alunas")
+
+@mentor_required
+def admin_resultados(request):
+    fase_id = request.GET.get("fase") or None
+    quiz_id = request.GET.get("quiz") or None
+    aluna_id = request.GET.get("aluna") or None
+
+    resultados = consultar_resultados_mentora(
+        fase_id=fase_id,
+        quiz_id=quiz_id,
+        aluna_id=aluna_id,
+    )
+
+    media_geral = (
+        round(sum(r["nota_percentual"] for r in resultados) / len(resultados))
+        if resultados
+        else 0
+    )
+
+    return render(
+        request,
+        "core/admin/resultados.html",
+        {
+            "resultados": resultados,
+            "media_geral": media_geral,
+            "fases": Fase.objects.all(),
+            "quizzes": Quiz.objects.select_related("fase").all(),
+            "alunas": _alunas_ativas().order_by("first_name", "email"),
+            "filtros": {
+                "fase": str(fase_id or ""),
+                "quiz": str(quiz_id or ""),
+                "aluna": str(aluna_id or ""),
+            },
+        },
+    )
+
+
+@mentor_required
+def api_resultados(request):
+    fase_id = request.GET.get("fase") or None
+    quiz_id = request.GET.get("quiz") or None
+    aluna_id = request.GET.get("aluna") or None
+
+    resultados = consultar_resultados_mentora(
+        fase_id=fase_id,
+        quiz_id=quiz_id,
+        aluna_id=aluna_id,
+    )
+    for r in resultados:
+        r["criada_em"] = r["criada_em"].isoformat()
+
+    return JsonResponse({"resultados": resultados})
