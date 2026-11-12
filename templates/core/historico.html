@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico | QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="mx-auto max-w-4xl p-6">
+        <nav class="flex items-center justify-between">
+            <a href="{% url 'home' %}" class="text-2xl font-bold text-green-700">QuiX</a>
+            <div class="flex items-center gap-5">
+                <a href="{% url 'aluna_dashboard' %}" class="text-sm font-medium text-gray-700 hover:text-green-700">Início</a>
+                <a href="{% url 'historico' %}" class="text-sm font-semibold text-green-700">Histórico</a>
+                <a href="{% url 'perfil' %}" class="text-sm font-medium text-gray-700 hover:text-green-700">Meu perfil</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="text-sm font-medium text-green-700" type="submit">Sair</button>
+                </form>
+            </div>
+        </nav>
+
+        <section class="mt-10 rounded-xl border bg-white p-8 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <p class="font-semibold text-green-700">Desempenho individual</p>
+                    <h1 class="mt-1 text-2xl font-bold">Histórico de Quizzes</h1>
+                </div>
+                <div class="rounded-lg bg-green-50 px-4 py-2 text-right">
+                    <span class="text-xs font-medium uppercase text-green-800">Pontuação total</span>
+                    <p class="text-xl font-bold text-green-700">{{ resumo.pontos_obtidos }} pts</p>
+                </div>
+            </div>
+
+            <p class="mt-2 text-sm text-gray-500">
+                A nota oficial corresponde sempre à sua primeira tentativa em cada quiz. Tentativas extras contam apenas como treino.
+            </p>
+
+            {% if historico %}
+                <div class="mt-6 overflow-x-auto">
+                    <table class="w-full border-collapse text-left text-sm">
+                        <thead>
+                            <tr class="border-b bg-gray-50 text-gray-600">
+                                <th class="px-4 py-3 font-semibold">Fase</th>
+                                <th class="px-4 py-3 font-semibold">Quiz</th>
+                                <th class="px-4 py-3 font-semibold">Nota Oficial</th>
+                                <th class="px-4 py-3 font-semibold">Tentativas</th>
+                                <th class="px-4 py-3 font-semibold">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            {% for item in historico %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-medium">Fase {{ item.fase.numero }} - {{ item.fase.nome }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                        {{ item.quiz.get_tipo_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 font-semibold text-gray-900">
+                                    {{ item.acertos }}/{{ item.total }} ({{ item.nota_percentual }}%)
+                                </td>
+                                <td class="px-4 py-3 text-gray-600">
+                                    {{ item.total_tentativas }}x
+                                </td>
+                                <td class="px-4 py-3 text-gray-500">
+                                    {{ item.data_oficial|date:"d/m/Y H:i" }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="mt-6 rounded-lg border border-dashed p-8 text-center">
+                    <p class="text-gray-600">Você ainda não respondeu nenhum quiz.</p>
+                    <a href="{% url 'aluna_dashboard' %}" class="mt-3 inline-block text-sm font-medium text-green-700 hover:underline">
+                        Voltar para o início
+                    </a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

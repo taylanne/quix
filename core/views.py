@@ -17,6 +17,7 @@ from .authentication import verify_google_credential
 from .decorators import developer_required, mentor_required
 from .forms import AlunaForm, LocalLoginForm
 from .models import PerfilUsuario
+from .resultados import historico_aluna, resumo_desempenho_aluna
 
 User = get_user_model()
 
@@ -155,7 +156,20 @@ def profile(request):
 def aluna_dashboard(request):
     if is_mentor(request.user):
         return redirect("admin_alunas")
-    return render(request, "core/aluna.html")
+    resumo = resumo_desempenho_aluna(request.user)
+    return render(request, "core/aluna.html", {"resumo": resumo})
+
+@developer_required
+def aluna_historico(request):
+    if is_mentor(request.user):
+        return redirect("admin_alunas")
+    resumo = resumo_desempenho_aluna(request.user)
+    historico = historico_aluna(request.user)
+    return render(
+        request,
+        "core/historico.html",
+        {"resumo": resumo, "historico": historico},
+    )
 
 
 def _alunas_ativas():
