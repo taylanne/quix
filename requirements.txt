@@ -1,4 +1,4 @@
 django
 pillow
 psycopg[binary]>=3.1.8,<4
-google-auth>=2.0,<3
+google-auth[requests]>=2.0,<3
