@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova fase · QuiX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <main class="max-w-xl mx-auto px-6 py-10">
+
+        <a href="{% url 'fase_lista' %}" class="text-green-700 font-medium">← Voltar para as fases</a>
+        <h1 class="text-3xl font-bold mt-4 mb-2">Nova fase</h1>
+        <p class="text-gray-600 mb-8">O quiz teórico e o quiz prático são criados junto com a fase.</p>
+
+        <form method="post" class="bg-white border rounded-xl p-6 shadow-sm space-y-5">
+            {% csrf_token %}
+
+            {% for campo in form %}
+                <div>
+                    <label for="{{ campo.id_for_label }}" class="block font-medium mb-1">{{ campo.label }}</label>
+                    {{ campo }}
+                    {% for erro in campo.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ erro }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit"
+                    class="bg-green-700 text-white px-5 py-2 rounded-lg font-medium hover:bg-green-800 transition">
+                Salvar fase
+            </button>
+        </form>
+
+    </main>
+</body>
+</html>

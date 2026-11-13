@@ -18,6 +18,8 @@ urlpatterns = [
     path("aluna", views.aluna_dashboard, name="aluna_dashboard"),
     path("historico", views.aluna_historico, name="historico"),
     path("admin/resultados", views.admin_resultados, name="admin_resultados"),
+    path("admin/fases", views.fase_lista, name="fase_lista"),
+    path("admin/fases/nova", views.fase_nova, name="fase_nova"),
     path("api/resultados", views.api_resultados, name="api_resultados"),
     path("", views.home, name="home"),
 ]

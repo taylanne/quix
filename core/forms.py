@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-
+from .models import Fase
 User = get_user_model()
 
 
@@ -29,3 +29,18 @@ class LocalLoginForm(forms.Form):
         strip=False,
         widget=forms.PasswordInput,
     )
+
+
+ESTILO_CAMPO = "w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-700"
+
+
+class FaseForm(forms.ModelForm):
+    class Meta:
+        model = Fase
+        fields = ["numero", "nome", "descricao"]
+        labels = {"numero": "Número", "nome": "Nome", "descricao": "Descrição"}
+        widgets = {
+            "numero": forms.NumberInput(attrs={"class": ESTILO_CAMPO}),
+            "nome": forms.TextInput(attrs={"class": ESTILO_CAMPO}),
+            "descricao": forms.Textarea(attrs={"class": ESTILO_CAMPO, "rows": 3}),
+        }
