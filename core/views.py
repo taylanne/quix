@@ -15,7 +15,7 @@ from google.auth.exceptions import GoogleAuthError
 from .access import get_or_create_profile, is_developer, is_mentor
 from .authentication import verify_google_credential
 from .decorators import developer_required, mentor_required
-from .forms import AlunaForm, LocalLoginForm
+from .forms import AlunaForm, LocalLoginForm, FaseForm
 from .models import Fase, PerfilUsuario, Quiz
 from .resultados import (
     consultar_resultados_mentora,
@@ -317,3 +317,22 @@ def api_resultados(request):
         r["criada_em"] = r["criada_em"].isoformat()
 
     return JsonResponse({"resultados": resultados})
+
+
+
+@mentor_required
+def fase_lista(request):
+    fases = Fase.objects.prefetch_related("quizzes")
+    return render(request, "core/admin/fases/lista.html", {"fases": fases})
+
+
+@mentor_required
+def fase_nova(request):
+    if request.method == "POST":
+        form = FaseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("fase_lista")
+    else:
+        form = FaseForm()
+    return render(request, "core/admin/fases/form.html", {"form": form})
